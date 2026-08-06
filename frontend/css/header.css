@@ -1,0 +1,29 @@
+header{
+
+    height:90px;
+
+    background:#D9C4AA;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:20px;
+
+}
+
+    .logo img{
+
+    height:70px;
+
+}
+
+    .menu{
+
+    font-size:35px;
+
+    cursor:pointer;
+
+}
