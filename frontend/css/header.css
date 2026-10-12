@@ -1,6 +1,7 @@
 header{
 
-    height:90px;
+    height:72px;
+    flex:0 0 72px;
 
     background:#D9C4AA;
 
@@ -10,20 +11,54 @@ header{
 
     align-items:center;
 
-    padding:20px;
+    padding:12px 16px;
+    position:relative;
 
 }
 
     .logo img{
 
-    height:70px;
+    height:52px;
 
 }
 
     .menu{
 
-    font-size:35px;
+    font-size:30px;
 
     cursor:pointer;
+    border:0;
+    background:transparent;
+    line-height:1;
+
+}
+
+.menu-panel{
+
+    position:absolute;
+    z-index:10;
+    top:calc(100% - 4px);
+    right:16px;
+    min-width:170px;
+    padding:8px;
+    border:1px solid #9C8468;
+    background:#FFFDF9;
+    box-shadow:0 6px 16px rgba(0, 0, 0, .16);
+
+}
+
+.menu-panel a{
+
+    display:block;
+    padding:10px 12px;
+    color:#2F2419;
+    text-decoration:none;
+
+}
+
+.menu-panel a:hover,
+.menu-panel a:focus-visible{
+
+    background:#EDE0D0;
 
 }

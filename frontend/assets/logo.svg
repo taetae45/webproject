@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 80" role="img" aria-label="AI Packing Detection">
+  <title>AI Packing Detection</title>
+  <!-- กล่องพัสดุแบบสามมิติ สื่อถึงงานแพ็กสินค้า -->
+  <g stroke="#2F2419" stroke-width="3" stroke-linejoin="round">
+    <polygon points="30,26 60,11 90,26 60,41" fill="#F4EFE8"/>
+    <polygon points="30,26 60,41 60,71 30,56" fill="#E4D8CB"/>
+    <polygon points="90,26 60,41 60,71 90,56" fill="#D9C4AA"/>
+  </g>
+  <!-- เครื่องหมายถูกสีเขียว สื่อถึงผลตรวจที่ถูกต้อง -->
+  <path d="M67 48 L73 55 L84 42" fill="none" stroke="#15803D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="112" y="42" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#2F2419" letter-spacing="0.5">AI PACKING</text>
+  <text x="113" y="68" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="400" fill="#6B6257" letter-spacing="4.2">DETECTION</text>
+</svg>

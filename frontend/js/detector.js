@@ -1,42 +1,31 @@
-const detectedList=document.getElementById("detectedList");
-const errorList=document.getElementById("errorList");
+function renderDetection(result) {
+    const requiredCounts = countItems(order);
+    const detectedCounts = result.detected_counts || countItems(result.detected || []);
 
-function mockDetect(){
+    orderList.innerHTML = "";
+    Object.entries(requiredCounts).forEach(([item, required]) => {
+        const detectedNow = Math.min(detectedCounts[item] || 0, required);
+        confirmedCounts[item] = Math.max(confirmedCounts[item] || 0, detectedNow);
 
-const detected=[
+        const found = confirmedCounts[item];
+        const isComplete = found >= required;
+        appendItem(
+            orderList,
+            `${item} (${found}/${required})`,
+            `order-item ${isComplete ? "complete" : "pending"}`,
+            isComplete ? "✓" : "✕"
+        );
+    });
 
-    "Milk",
+    unexpectedList.innerHTML = "";
+    Object.entries(countItems(result.unexpected || [])).forEach(([item, count]) => {
+        const suffix = count > 1 ? ` (${count})` : "";
+        appendItem(unexpectedList, `${item}${suffix} not in this list`);
+    });
 
-    "Bread"
-
-];
-
-    detectedList.innerHTML="";
-
-    errorList.innerHTML="";
-
-    detected.forEach(item=>{
-
-    let li=document.createElement("li");
-
-    li.innerHTML="✅ "+item;
-
-    detectedList.appendChild(li);
-
-});
-
-    const missing=
-
-    order.filter(item=>!detected.includes(item));
-
-    missing.forEach(item=>{
-
-    let li=document.createElement("li");
-
-    li.innerHTML="❌ "+item;
-
-    errorList.appendChild(li);
-
-});
-
+    const orderIsComplete = Object.entries(requiredCounts).every(([item, required]) =>
+        (confirmedCounts[item] || 0) >= required
+    );
+    const hasUnexpectedItem = (result.unexpected || []).length > 0;
+    if (orderIsComplete && !hasUnexpectedItem) advanceToNextOrder();
 }

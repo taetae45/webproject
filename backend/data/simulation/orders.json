@@ -1,0 +1,7 @@
+{
+  "orders": [
+    {"id": "DEMO-001", "items": ["Biscuit", "mama", "chocolate"]},
+    {"id": "DEMO-002", "items": ["chocolate", "Tissue", "coffee", "Mama"]},
+    {"id": "DEMO-003", "items": ["rice porridge", "Biscuit"]}
+  ]
+}

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="AI Packing Detection">
+  <title>AI Packing Detection</title>
+  <rect width="64" height="64" rx="12" fill="#F4EFE8"/>
+  <g stroke="#2F2419" stroke-width="2.5" stroke-linejoin="round">
+    <polygon points="14,22 32,13 50,22 32,31" fill="#F4EFE8"/>
+    <polygon points="14,22 32,31 32,51 14,42" fill="#E4D8CB"/>
+    <polygon points="50,22 32,31 32,51 50,42" fill="#D9C4AA"/>
+  </g>
+  <path d="M34 38 L38 43 L45 33" fill="none" stroke="#15803D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

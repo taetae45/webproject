@@ -1,0 +1,6 @@
+INFO:     127.0.0.1:53736 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53736 - "GET /api/orders/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50528 - "POST /api/orders/random HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62497 - "POST /api/orders/random HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64526 - "GET /api/orders/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62338 - "GET /api/orders/history HTTP/1.1" 200 OK
