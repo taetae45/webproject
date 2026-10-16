@@ -3,29 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ประวัติสินค้า | AI Packing Detection</title>
+    <title>history | AI Packing Detection</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/history.css">
 </head>
 <body class="history-page">
     <header>
-        <a class="logo" href="index.html" aria-label="กลับสู่หน้าตรวจแพ็กสินค้า"><img src="assets/logo.svg" alt="AI Packing Detection"></a>
+        <a class="logo" href="index.html" aria-label="back to home"><img src="assets/logo.svg" alt="AI Packing Detection"></a>
         <button class="menu" id="menuButton" type="button" aria-expanded="false" aria-controls="menuPanel">☰</button>
-        <nav class="menu-panel" id="menuPanel" aria-label="เมนูหลัก" hidden>
-            <a href="history.html">ประวัติสินค้า</a>
+        <nav class="menu-panel" id="menuPanel" aria-label="main menu" hidden>
+            <a href="history.html">history</a>
         </nav>
     </header>
     <main class="history-content">
         <div class="history-heading">
             <div>
-                <h1>ประวัติสินค้า</h1>
-                <p>ออร์เดอร์ที่ตรวจแพ็กครบแล้ว</p>
+                <h1>history</h1>
+                <p>order packed</p>
             </div>
-            <a class="back-link" href="index.html">กลับหน้าตรวจแพ็ก</a>
+            <a class="back-link" href="index.html" aria-label="back to home"></a>
         </div>
-        <p class="history-message" id="historyMessage" aria-live="polite">กำลังโหลดประวัติ...</p>
-        <section class="history-list" id="historyList" aria-label="รายการออร์เดอร์ที่เสร็จสิ้น"></section>
+        <p class="history-message" id="historyMessage" aria-live="polite">loading...</p>
+        <section class="history-list" id="historyList" aria-label="Completed orders"></section>
     </main>
     <script src="js/config.js"></script>
     <script src="js/navigation.js"></script>

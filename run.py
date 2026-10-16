@@ -14,7 +14,7 @@ import uvicorn
 
 ROOT = Path(__file__).resolve().parent
 HOST = "127.0.0.1"
-PORT = 8000
+PORT = 8001
 URL = f"http://{HOST}:{PORT}/"
 BROWSER_DELAY_SECONDS = 2
 
@@ -38,8 +38,8 @@ def main() -> int:
     sys.path.insert(0, str(ROOT))
 
     if is_port_in_use():
-        print(f"พอร์ต {PORT} ถูกใช้งานอยู่แล้ว - น่าจะมี backend เปิดค้างอยู่")
-        print(f"กำลังเปิด {URL} ให้เลย ถ้าใช้งานได้ก็ไม่ต้องรันซ้ำ")
+        print(f"port {PORT} is already in use. Cannot start server.")
+        print(f"starting {URL} in your browser instead...")
         webbrowser.open(URL)
         return 0
 
