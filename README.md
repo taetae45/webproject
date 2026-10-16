@@ -18,12 +18,12 @@
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-uvicorn backend.main:app --reload
+uvicorn backend.main:app --reload --port 8001
 ```
 
 เปิด frontend ผ่าน Live Server ที่พอร์ต 5500 (เช่น `http://127.0.0.1:5500/frontend/`) แล้วกด **START** และอนุญาตให้เว็บใช้กล้อง
 
-ตรวจสอบ backend ได้ที่ `http://127.0.0.1:8000/health` และเอกสาร API ที่ `http://127.0.0.1:8000/docs`
+ตรวจสอบ backend ได้ที่ `http://127.0.0.1:8001/health` และเอกสาร API ที่ `http://127.0.0.1:8001/docs`
 
 ## เพิ่มโมเดล YOLO
 

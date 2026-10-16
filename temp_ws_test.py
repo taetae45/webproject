@@ -8,8 +8,8 @@ import cv2
 import numpy as np
 import websockets
 
-BASE_URL = "http://127.0.0.1:8000"
-WS_URL = "ws://127.0.0.1:8000/ws/detect"
+BASE_URL = "http://127.0.0.1:8001"
+WS_URL = "ws://127.0.0.1:8001/ws/detect"
 
 
 def black_jpeg_data_url() -> str:

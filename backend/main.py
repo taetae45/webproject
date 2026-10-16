@@ -98,4 +98,4 @@ app.mount("/", StaticFiles(directory=FRONTEND, html=True), name="frontend")
 
 if __name__ == "__main__":
     # สั่งรันด้วย `py -m backend.main` ได้เลย ไม่ต้องพิมพ์ uvicorn เอง
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8001)
