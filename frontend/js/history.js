@@ -33,4 +33,4 @@ async function loadHistory() {
     }
 }
 
-loadHistory();
+if (document.body.classList.contains("history-page")) loadHistory();

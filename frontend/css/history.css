@@ -10,6 +10,12 @@
     margin: 32px auto;
 }
 
+#historyView {
+    min-height: 0;
+    flex: 1;
+    overflow: auto;
+}
+
 .history-heading {
     display: flex;
     align-items: center;

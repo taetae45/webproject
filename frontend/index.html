@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/button.css">
+    <link rel="stylesheet" href="css/history.css">
 </head>
 <body>
     <header>
@@ -18,22 +19,36 @@
         </nav>
     </header>
 
-    <section class="toolbar">
-        <select id="cameraSelect"><option>Select Camera</option></select>
-        <button id="startBtn">START</button>
-        <button id="resetBtn">RESET</button>
-    </section>
+    <div id="homeView" class="home-view">
+        <section class="toolbar">
+            <select id="cameraSelect"><option>Select Camera</option></select>
+            <button id="startBtn">START</button>
+            <button id="resetBtn">RESET</button>
+        </section>
 
-    <section class="container">
-        <div class="left-panel"><video id="video" autoplay playsinline></video></div>
-        <div class="right-panel">
-            <div class="card order-card">
-                <h3>Order</h3>
-                <ul id="orderList"></ul>
-                <ul id="unexpectedList" aria-live="polite"></ul>
+        <section class="container">
+            <div class="left-panel"><video id="video" autoplay playsinline></video></div>
+            <div class="right-panel">
+                <div class="card order-card">
+                    <h3>Order</h3>
+                    <ul id="orderList"></ul>
+                    <ul id="unexpectedList" aria-live="polite"></ul>
+                </div>
             </div>
+        </section>
+    </div>
+
+    <main id="historyView" class="history-content" hidden>
+        <div class="history-heading">
+            <div>
+                <h1>history</h1>
+                <p>order packed</p>
+            </div>
+            <a class="back-link" href="index.html" aria-label="back to home">back</a>
         </div>
-    </section>
+        <p class="history-message" id="historyMessage" aria-live="polite">loading...</p>
+        <section class="history-list" id="historyList" aria-label="Completed orders"></section>
+    </main>
 
     <script src="js/config.js"></script>
     <script src="js/camera.js"></script>
@@ -41,6 +56,7 @@
     <script src="js/detector.js"></script>
     <script src="js/websocket.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/history.js"></script>
     <script src="js/navigation.js"></script>
 </body>
 </html>

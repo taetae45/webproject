@@ -1,3 +1,10 @@
+.home-view {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+}
+
 .toolbar {
     display: flex;
     flex: 0 0 67px;
@@ -44,7 +51,7 @@ video {
     padding: 15px;
     border: 1px solid gray;
     background: #E4D8CB;
-    font-size: 20px;
+    font-size: 23.5px;
 }
 
 .order-card {

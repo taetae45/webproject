@@ -43,8 +43,8 @@ def main() -> int:
         webbrowser.open(URL)
         return 0
 
-    print(f"กำลังเปิดเซิร์ฟเวอร์ที่ {URL}")
-    print("ปิดหน้าต่างนี้ (หรือกด Ctrl+C) เพื่อหยุดเซิร์ฟเวอร์")
+    print(f"Starting server at {URL}")
+    print("Keep this window open. Press Ctrl+C to stop the server.")
 
     threading.Thread(target=open_browser_when_ready, daemon=True).start()
     uvicorn.run("backend.main:app", host=HOST, port=PORT, reload="--reload" in sys.argv)

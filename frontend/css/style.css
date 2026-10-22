@@ -6,6 +6,10 @@
 
 }
 
+[hidden] {
+    display: none !important;
+}
+
 body{
 
     background:#F4EFE8;
