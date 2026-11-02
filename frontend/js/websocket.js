@@ -1,6 +1,7 @@
 // เปิดช่องสื่อสารแบบ realtime ระหว่างหน้าเว็บกับ FastAPI
 function connectWebSocket() {
-    const socket = new WebSocket(WS_URL);
+    const authToken = encodeURIComponent(sessionStorage.getItem("packing_token") || "");
+    const socket = new WebSocket(`${WS_URL}?token=${authToken}`);
     // รับ order ใหม่ หรือผลตรวจจับจาก backend
     socket.onmessage = event => {
         const data = JSON.parse(event.data);

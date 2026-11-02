@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,20 +14,22 @@
         <button class="menu" id="menuButton" type="button" aria-expanded="false" aria-controls="menuPanel">☰</button>
         <nav class="menu-panel" id="menuPanel" aria-label="main menu" hidden>
             <a href="history.html">history</a>
+            <button id="historyLogout" type="button">Sign Out</button>
         </nav>
     </header>
     <main class="history-content">
         <div class="history-heading">
             <div>
                 <h1>history</h1>
-                <p>order packed</p>
+                <p>Orders packed</p>
             </div>
-            <a class="back-link" href="index.html" aria-label="back to home"></a>
+            <a class="back-link" href="index.html" aria-label="Back to home">Back</a>
         </div>
         <p class="history-message" id="historyMessage" aria-live="polite">loading...</p>
         <section class="history-list" id="historyList" aria-label="Completed orders"></section>
     </main>
     <script src="js/config.js"></script>
+    <script src="js/guard.js"></script>
     <script src="js/navigation.js"></script>
     <script src="js/history.js"></script>
 </body>

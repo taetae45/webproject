@@ -5,7 +5,12 @@ import cv2
 import numpy as np
 
 # ชื่อที่ต้องการใช้ในระบบ กรณีชื่อ class ในโมเดลสะกดต่างจากชื่อสินค้า
-LABEL_ALIASES = {"Biskis": "Biscuit"}
+LABEL_ALIASES = {
+    "biskist": "Biscuit",  # Name used by the trained model for Biscuit.
+    "biskis": "Biscuit",   # Keep compatibility with the earlier spelling.
+    "biscuit": "Biscuit",
+    "tissue": "Tissue",
+}
 
 
 class Detector:
@@ -29,10 +34,10 @@ class Detector:
         image = cv2.imdecode(np.frombuffer(frame_bytes, np.uint8), cv2.IMREAD_COLOR)
         if image is None:
             raise ValueError("The received frame is not a valid JPEG")
-        # Values match the local model test configuration supplied with the project.
-        result = self.model(image, conf=0.80, iou=0.30, verbose=False)[0]
+        # A lower confidence threshold improves recall on low-resolution webcam frames.
+        result = self.model(image, conf=0.35, iou=0.45, verbose=False)[0]
         labels = [str(result.names[int(box.cls[0])]) for box in result.boxes]
-        return [LABEL_ALIASES.get(label, label) for label in labels]
+        return [LABEL_ALIASES.get(label.casefold(), label.casefold()) for label in labels]
 
 
 def compare(expected: list[str], detected: list[str]) -> dict:

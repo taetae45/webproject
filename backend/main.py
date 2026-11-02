@@ -1,10 +1,13 @@
 from pathlib import Path
 import base64
+import os
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 from pydantic import BaseModel
+import sqlite3, hashlib, secrets
+from datetime import datetime, timezone
 from backend.detector import Detector, compare
 from backend.history import HistoryStore
 from backend.orders import OrderStore
@@ -22,6 +25,33 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 orders = OrderStore(ROOT / "data" / "simulation" / "orders.json")
 history = HistoryStore(ROOT / "data" / "history" / "completed_orders.json")
 detector = Detector(ROOT / "models" / "best.pt")
+DB = ROOT / "data" / "users.sqlite3"
+SESSIONS = {}
+# กำหนดรหัสผ่านผู้ดูแลจาก environment แทนการฝังรหัสผ่านไว้ในซอร์สโค้ด
+ADMIN_PASSWORD = os.getenv("PACKING_ADMIN_PASSWORD")
+
+def db():
+    DB.parent.mkdir(parents=True, exist_ok=True)
+    con = sqlite3.connect(DB)
+    con.row_factory = sqlite3.Row
+    con.execute("CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password TEXT NOT NULL, dob TEXT NOT NULL, national_id TEXT NOT NULL, first_name TEXT NOT NULL, last_name TEXT NOT NULL, created_at TEXT NOT NULL)")
+    con.execute("CREATE TABLE IF NOT EXISTS logins (username TEXT NOT NULL, logged_at TEXT NOT NULL)")
+    return con
+
+def pw_hash(value): return hashlib.pbkdf2_hmac("sha256", value.encode(), b"packing-register-v1", 200_000).hex()
+
+class RegisterRequest(BaseModel):
+    username: str; password: str; dob: str; national_id: str; first_name: str; last_name: str
+class LoginRequest(BaseModel):
+    username: str; password: str
+
+def require_user(token):
+    username = SESSIONS.get(token or "")
+    if not username: raise HTTPException(401, "Please sign in")
+    return username
+
+def require_admin(token):
+    if require_user(token) != "Admin": raise HTTPException(403, "Administrator access required")
 
 
 class DetectionRequest(BaseModel):
@@ -42,6 +72,78 @@ def result_for(image: str) -> dict:
 @app.get("/health")
 def health():
     return {"status": "ok", "model_loaded": detector.model is not None}
+
+@app.post("/api/auth/register")
+def register(body: RegisterRequest):
+    values = [v.strip() for v in body.dict().values()]
+    if not all(values) or len(body.password) < 4: raise HTTPException(400, "Complete all fields and use a password with at least 4 characters")
+    if body.username.lower() == "admin": raise HTTPException(400, "This username is reserved")
+    con = db()
+    try:
+        con.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)", (body.username.strip(), pw_hash(body.password), body.dob, body.national_id.strip(), body.first_name.strip(), body.last_name.strip(), datetime.now(timezone.utc).isoformat()))
+        con.commit()
+    except sqlite3.IntegrityError: raise HTTPException(409, "This username is already taken")
+    finally: con.close()
+    return {"ok": True}
+
+@app.post("/api/auth/login")
+def login(body: LoginRequest):
+    con = db()
+    row = con.execute("SELECT username,password FROM users WHERE username=?", (body.username,)).fetchone() if body.username != "Admin" else None
+    is_admin = body.username == "Admin" and ADMIN_PASSWORD and secrets.compare_digest(body.password, ADMIN_PASSWORD)
+    valid = is_admin or (row and row["password"] == pw_hash(body.password))
+    if not valid: con.close(); raise HTTPException(401, "Incorrect username or password")
+    username = "Admin" if body.username == "Admin" else row["username"]
+    con.execute("INSERT INTO logins VALUES (?, ?)", (username, datetime.now(timezone.utc).isoformat())); con.commit(); con.close()
+    token = secrets.token_urlsafe(32); SESSIONS[token] = username
+    return {"token": token, "username": username, "role": "admin" if username == "Admin" else "employee"}
+
+@app.post("/api/auth/logout")
+def logout(body: dict): SESSIONS.pop(body.get("token", ""), None); return {"ok": True}
+
+@app.get("/api/auth/session")
+def auth_session(token: str):
+    username = require_user(token)
+    return {"username": username, "role": "admin" if username == "Admin" else "employee"}
+
+@app.get("/api/admin/overview")
+def overview(token: str):
+    require_admin(token); con=db()
+    users=[dict(r) for r in con.execute("SELECT username,dob,national_id,first_name,last_name,created_at FROM users ORDER BY username")]
+    logins=[dict(r) for r in con.execute("SELECT username,logged_at FROM logins ORDER BY logged_at DESC LIMIT 100")]; con.close()
+    products=sorted({item for order in orders.orders for item in order["items"]}, key=str.casefold)
+    return {"users":users,"logins":logins,"orders":orders.orders,"completed":history.all(),"products":products}
+
+@app.delete("/api/admin/users/{username}")
+def delete_user(username: str, token: str):
+    require_admin(token); con=db(); con.execute("DELETE FROM users WHERE username=?",(username,)); con.commit(); con.close(); return {"ok":True}
+
+class OrderEdit(BaseModel): items: list[str]
+class UserEdit(BaseModel): dob: str; national_id: str; first_name: str; last_name: str
+
+@app.put("/api/admin/users/{username}")
+def edit_user(username: str, body: UserEdit, token: str):
+    require_admin(token); con=db()
+    result=con.execute("UPDATE users SET dob=?,national_id=?,first_name=?,last_name=? WHERE username=?", (body.dob,body.national_id.strip(),body.first_name.strip(),body.last_name.strip(),username))
+    con.commit(); con.close()
+    if not result.rowcount: raise HTTPException(404,"Employee not found")
+    return {"ok":True}
+
+@app.put("/api/admin/completed-orders/{record_id}")
+def edit_completed_order(record_id: str, body: OrderEdit, token: str):
+    require_admin(token)
+    items = [item.strip() for item in body.items if item.strip()]
+    updated = history.update_items(record_id, items)
+    if updated is None:
+        raise HTTPException(404, "Packed order not found")
+    return updated
+
+@app.delete("/api/admin/completed-orders/{record_id}")
+def delete_completed_order(record_id: str, token: str):
+    require_admin(token)
+    if not history.delete(record_id):
+        raise HTTPException(404, "Packed order not found")
+    return {"ok": True}
 
 
 @app.get("/api/orders/current")
@@ -72,13 +174,14 @@ def detect(body: DetectionRequest):
 @app.websocket("/ws/detect")
 async def websocket_detect(websocket: WebSocket):
     # หน้าเว็บส่ง frame และ backend ส่งผลตรวจกลับช่องทางเดิม
+    username = SESSIONS.get(websocket.query_params.get("token", ""))
     await websocket.accept()
     await websocket.send_json({"type": "order", "order": orders.current()})
     try:
         while True:
             message = await websocket.receive_json()
             if message.get("type") == "complete_and_next":
-                history.record(orders.current())
+                history.record(orders.current(), username)
                 await websocket.send_json({"type": "order", "order": orders.next()})
             elif message.get("type") == "next_order":
                 await websocket.send_json({"type": "order", "order": orders.next()})

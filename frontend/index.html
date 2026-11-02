@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,15 +11,32 @@
     <link rel="stylesheet" href="css/history.css">
 </head>
 <body>
-    <header>
+    <main id="authView" class="auth-view">
+        <section class="auth-card"><img src="assets/logo.svg" alt=""><p class="eyebrow">AI PACKING DETECTION</p><h1 id="authTitle">Sign In</h1><p class="muted" id="authSubtitle">Sign in to start managing orders.</p>
+            <form id="loginForm"><label>Username<input name="username" required autocomplete="username"></label><label>Password<input name="password" type="password" required autocomplete="current-password"></label><button class="primary" type="submit">Sign In</button></form>
+            <form id="registerForm" hidden><div class="form-grid"><label>Username<input name="username" required></label><label>Password<input name="password" type="password" minlength="4" required></label><label>Date of Birth<input name="dob" type="date" required></label><label>National ID Number<input name="national_id" required maxlength="20"></label><label>First Name<input name="first_name" required></label><label>Last Name<input name="last_name" required></label></div><button class="primary" type="submit">Register Employee</button></form>
+            <p class="form-message" id="authMessage" aria-live="polite"></p><button class="text-button" id="registerToggle" type="button">Create an employee account</button><button class="text-button" id="loginToggle" type="button" hidden>Back to Sign In</button>
+        </section>
+    </main>
+    <main id="adminView" class="admin-view" hidden><div class="admin-heading"><div><p class="eyebrow">ADMIN CONTROL CENTER</p><h1>Admin Dashboard</h1></div><button class="primary" data-logout>Sign Out</button></div><div id="adminContent"></div></main>
+    <dialog id="editDialog" class="edit-dialog" aria-labelledby="editDialogTitle">
+        <form id="editDialogForm">
+            <div class="dialog-heading"><div><p class="eyebrow">ADMIN EDITOR</p><h2 id="editDialogTitle">Edit</h2></div><button type="button" class="dialog-close" id="closeEditDialog" aria-label="Close">×</button></div>
+            <div id="editDialogBody"></div>
+            <p id="editDialogMessage" class="form-message" aria-live="polite"></p>
+            <div class="dialog-actions"><button type="button" id="cancelEditDialog">Cancel</button><button class="primary" type="submit">Save Changes</button></div>
+        </form>
+    </dialog>
+    <header id="appHeader" hidden>
         <div class="logo"><img src="assets/logo.svg" alt="AI Packing Detection"></div>
         <button class="menu" id="menuButton" type="button" aria-expanded="false" aria-controls="menuPanel">☰</button>
         <nav class="menu-panel" id="menuPanel" aria-label="main menu" hidden>
             <a href="history.html">history</a>
+            <button id="menuLogout" type="button">Sign Out</button>
         </nav>
     </header>
 
-    <div id="homeView" class="home-view">
+    <div id="homeView" class="home-view" hidden>
         <section class="toolbar">
             <select id="cameraSelect"><option>Select Camera</option></select>
             <button id="startBtn">START</button>
@@ -50,13 +67,14 @@
         <section class="history-list" id="historyList" aria-label="Completed orders"></section>
     </main>
 
-    <script src="js/config.js"></script>
-    <script src="js/camera.js"></script>
-    <script src="js/order.js"></script>
-    <script src="js/detector.js"></script>
-    <script src="js/websocket.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/history.js"></script>
-    <script src="js/navigation.js"></script>
+    <script src="js/config.js?v=2"></script>
+    <script src="js/camera.js?v=2"></script>
+    <script src="js/order.js?v=2"></script>
+    <script src="js/detector.js?v=2"></script>
+    <script src="js/websocket.js?v=2"></script>
+    <script src="js/app.js?v=2"></script>
+    <script src="js/history.js?v=2"></script>
+    <script src="js/navigation.js?v=2"></script>
+    <script src="js/auth.js?v=3"></script>
 </body>
 </html>

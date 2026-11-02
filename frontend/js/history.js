@@ -2,21 +2,25 @@ const historyList = document.getElementById("historyList");
 const historyMessage = document.getElementById("historyMessage");
 
 function formatCompletedAt(value) {
-    return new Intl.DateTimeFormat("th-TH", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
+    return new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
+}
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 }
 
 function renderHistory(orders) {
     historyList.innerHTML = "";
     if (orders.length === 0) {
-        historyMessage.textContent = "ยังไม่มีออร์เดอร์ที่แพ็กเสร็จ";
+        historyMessage.textContent = "No packed orders yet.";
         return;
     }
-    historyMessage.textContent = `ประวัติทั้งหมด ${orders.length} ออร์เดอร์`;
+    historyMessage.textContent = `${orders.length} orders in history`;
     orders.forEach(order => {
         const card = document.createElement("article");
         card.className = "history-card";
-        const items = order.items.map(item => `<li>✓ ${item}</li>`).join("");
-        card.innerHTML = `<div class="history-card-header"><strong>${order.id}</strong><time datetime="${order.completed_at}">${formatCompletedAt(order.completed_at)}</time></div><ul>${items}</ul>`;
+        const items = order.items.map(item => `<li>✓ ${escapeHtml(item)}</li>`).join("");
+        card.innerHTML = `<div class="history-card-header"><strong>${escapeHtml(order.id)}</strong><time datetime="${escapeHtml(order.completed_at)}">${formatCompletedAt(order.completed_at)}</time></div><p class="history-employee">Packed by: <strong>${escapeHtml(order.employee || 'Not recorded')}</strong></p><ul>${items}</ul>`;
         historyList.appendChild(card);
     });
 }
@@ -29,8 +33,10 @@ async function loadHistory() {
         renderHistory(payload.orders || []);
     } catch (error) {
         console.error("Cannot load order history:", error);
-        historyMessage.textContent = "ไม่สามารถโหลดประวัติได้ กรุณาตรวจสอบว่า backend ทำงานอยู่";
+        historyMessage.textContent = "Could not load order history. Please check that the backend is running.";
     }
 }
 
-if (document.body.classList.contains("history-page")) loadHistory();
+if (document.body.classList.contains("history-page")) {
+    window.authGuard.then(isAuthenticated => { if (isAuthenticated) loadHistory(); });
+}

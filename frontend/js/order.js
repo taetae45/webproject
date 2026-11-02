@@ -2,12 +2,16 @@ const orderList = document.getElementById("orderList");
 const unexpectedList = document.getElementById("unexpectedList");
 let order = [];
 let confirmedCounts = {};
+let activeDetectionCounts = {};
+let absentFrames = {};
 let isAdvancingOrder = false;
 let autoAdvanceTimer;
 
 function loadOrder(items = order) {
     order = items;
     confirmedCounts = {};
+    activeDetectionCounts = {};
+    absentFrames = {};
     isAdvancingOrder = false;
     clearTimeout(autoAdvanceTimer);
     orderList.innerHTML = "";
