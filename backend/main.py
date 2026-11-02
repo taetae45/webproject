@@ -27,8 +27,17 @@ history = HistoryStore(ROOT / "data" / "history" / "completed_orders.json")
 detector = Detector(ROOT / "models" / "best.pt")
 DB = ROOT / "data" / "users.sqlite3"
 SESSIONS = {}
-# กำหนดรหัสผ่านผู้ดูแลจาก environment แทนการฝังรหัสผ่านไว้ในซอร์สโค้ด
-ADMIN_PASSWORD = os.getenv("PACKING_ADMIN_PASSWORD")
+# ใช้ค่านี้สร้างบัญชี Admin ครั้งแรกเท่านั้น จากนั้นรหัสผ่านจะอยู่ในฐานข้อมูล
+INITIAL_ADMIN_PASSWORD = os.getenv("PACKING_ADMIN_PASSWORD")
+
+def hash_admin_password(password):
+    salt = secrets.token_bytes(16)
+    password_hash = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 200_000).hex()
+    return salt.hex(), password_hash
+
+def verify_admin_password(password, salt, expected_hash):
+    actual_hash = hashlib.pbkdf2_hmac("sha256", password.encode(), bytes.fromhex(salt), 200_000).hex()
+    return secrets.compare_digest(actual_hash, expected_hash)
 
 def db():
     DB.parent.mkdir(parents=True, exist_ok=True)
@@ -36,6 +45,11 @@ def db():
     con.row_factory = sqlite3.Row
     con.execute("CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password TEXT NOT NULL, dob TEXT NOT NULL, national_id TEXT NOT NULL, first_name TEXT NOT NULL, last_name TEXT NOT NULL, created_at TEXT NOT NULL)")
     con.execute("CREATE TABLE IF NOT EXISTS logins (username TEXT NOT NULL, logged_at TEXT NOT NULL)")
+    con.execute("CREATE TABLE IF NOT EXISTS admins (username TEXT PRIMARY KEY, password_salt TEXT NOT NULL, password_hash TEXT NOT NULL, created_at TEXT NOT NULL)")
+    if INITIAL_ADMIN_PASSWORD and not con.execute("SELECT 1 FROM admins WHERE username='Admin'").fetchone():
+        salt, password_hash = hash_admin_password(INITIAL_ADMIN_PASSWORD)
+        con.execute("INSERT INTO admins VALUES (?, ?, ?, ?)", ("Admin", salt, password_hash, datetime.now(timezone.utc).isoformat()))
+        con.commit()
     return con
 
 def pw_hash(value): return hashlib.pbkdf2_hmac("sha256", value.encode(), b"packing-register-v1", 200_000).hex()
@@ -89,9 +103,13 @@ def register(body: RegisterRequest):
 @app.post("/api/auth/login")
 def login(body: LoginRequest):
     con = db()
-    row = con.execute("SELECT username,password FROM users WHERE username=?", (body.username,)).fetchone() if body.username != "Admin" else None
-    is_admin = body.username == "Admin" and ADMIN_PASSWORD and secrets.compare_digest(body.password, ADMIN_PASSWORD)
-    valid = is_admin or (row and row["password"] == pw_hash(body.password))
+    if body.username == "Admin":
+        admin = con.execute("SELECT password_salt,password_hash FROM admins WHERE username=?", (body.username,)).fetchone()
+        valid = admin and verify_admin_password(body.password, admin["password_salt"], admin["password_hash"])
+        row = None
+    else:
+        row = con.execute("SELECT username,password FROM users WHERE username=?", (body.username,)).fetchone()
+        valid = row and row["password"] == pw_hash(body.password)
     if not valid: con.close(); raise HTTPException(401, "Incorrect username or password")
     username = "Admin" if body.username == "Admin" else row["username"]
     con.execute("INSERT INTO logins VALUES (?, ?)", (username, datetime.now(timezone.utc).isoformat())); con.commit(); con.close()
