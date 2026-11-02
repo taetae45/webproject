@@ -44,7 +44,6 @@ def db():
     con = sqlite3.connect(DB)
     con.row_factory = sqlite3.Row
     con.execute("CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password TEXT NOT NULL, dob TEXT NOT NULL, national_id TEXT NOT NULL, first_name TEXT NOT NULL, last_name TEXT NOT NULL, created_at TEXT NOT NULL)")
-    con.execute("CREATE TABLE IF NOT EXISTS logins (username TEXT NOT NULL, logged_at TEXT NOT NULL)")
     con.execute("CREATE TABLE IF NOT EXISTS admins (username TEXT PRIMARY KEY, password_salt TEXT NOT NULL, password_hash TEXT NOT NULL, created_at TEXT NOT NULL)")
     if INITIAL_ADMIN_PASSWORD and not con.execute("SELECT 1 FROM admins WHERE username='Admin'").fetchone():
         salt, password_hash = hash_admin_password(INITIAL_ADMIN_PASSWORD)
@@ -112,7 +111,7 @@ def login(body: LoginRequest):
         valid = row and row["password"] == pw_hash(body.password)
     if not valid: con.close(); raise HTTPException(401, "Incorrect username or password")
     username = "Admin" if body.username == "Admin" else row["username"]
-    con.execute("INSERT INTO logins VALUES (?, ?)", (username, datetime.now(timezone.utc).isoformat())); con.commit(); con.close()
+    con.close()
     token = secrets.token_urlsafe(32); SESSIONS[token] = username
     return {"token": token, "username": username, "role": "admin" if username == "Admin" else "employee"}
 
@@ -128,9 +127,9 @@ def auth_session(token: str):
 def overview(token: str):
     require_admin(token); con=db()
     users=[dict(r) for r in con.execute("SELECT username,dob,national_id,first_name,last_name,created_at FROM users ORDER BY username")]
-    logins=[dict(r) for r in con.execute("SELECT username,logged_at FROM logins ORDER BY logged_at DESC LIMIT 100")]; con.close()
+    con.close()
     products=sorted({item for order in orders.orders for item in order["items"]}, key=str.casefold)
-    return {"users":users,"logins":logins,"orders":orders.orders,"completed":history.all(),"products":products}
+    return {"users":users,"orders":orders.orders,"completed":history.all(),"products":products}
 
 @app.delete("/api/admin/users/{username}")
 def delete_user(username: str, token: str):

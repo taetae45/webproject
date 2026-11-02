@@ -101,27 +101,16 @@ async function loadAdmin() {
     try {
         const data = await api('/api/admin/overview?token=' + encodeURIComponent(token()));
         storeProducts = data.products || [];
-        const loginDays = {};
-        data.logins.forEach(entry => {
-            const day = new Date(entry.logged_at).toLocaleDateString('en-US');
-            loginDays[day] = (loginDays[day] || 0) + 1;
-        });
-        const days = Object.entries(loginDays).slice(0, 7).reverse();
         document.getElementById('adminContent').innerHTML = `
             <div class="stats">
                 <article><b>${data.users.length}</b><span>Employees</span></article>
-                <article><b>${data.logins.length}</b><span>Recent Sign-ins</span></article>
                 <article><b>${data.completed.length}</b><span>Orders Packed</span></article>
             </div>
-            <section class="admin-panel"><h2>Sign-ins and Packing Statistics</h2>
-                <div class="chart"><div>${days.map(([day, count]) => `<div class="bar-wrap"><b>${count}</b><i style="height:${Math.max(8, count * 24)}px"></i><small>${day}</small></div>`).join('') || '<p>No sign-in data yet.</p>'}</div>
-                <p>Successfully packed orders: <strong>${data.completed.length}</strong></p>
-            </section>
             <section class="admin-panel"><h2>Packed Orders — Customer Changes</h2><p>Edit the products in an order when a customer requests a change after packing.</p><div class="table-wrap"><table><thead><tr><th>Order</th><th>Packed By</th><th>Packed At</th><th>Items</th><th>Actions</th></tr></thead><tbody>${data.completed.map(order => `<tr><td>${escapeHtml(order.id)}</td><td>${escapeHtml(order.employee || 'Not recorded')}</td><td>${new Date(order.completed_at).toLocaleString('en-US')}</td><td>${order.items.map(escapeHtml).join(', ') || 'No items'}</td><td><button onclick="editOrder('${encodeURIComponent(order.record_id)}','${encodeURIComponent(JSON.stringify(order.items))}','${encodeURIComponent(order.id)}')">Edit Items</button> <button class="danger" onclick="deleteOrder('${encodeURIComponent(order.record_id)}')">Delete</button></td></tr>`).join('') || '<tr><td colspan="5">No packed orders yet.</td></tr>'}</tbody></table></div></section>
             <section class="admin-panel"><h2>Employees</h2><div class="table-wrap"><table><thead><tr><th>Username</th><th>Name</th><th>Date of Birth</th><th>National ID</th><th>Actions</th></tr></thead><tbody>
                 ${data.users.map(user => `<tr><td>${escapeHtml(user.username)}</td><td>${escapeHtml(user.first_name)} ${escapeHtml(user.last_name)}</td><td>${escapeHtml(user.dob)}</td><td>${escapeHtml(user.national_id)}</td><td><button onclick="editUser('${encodeURIComponent(user.username)}','${encodeURIComponent(user.first_name)}','${encodeURIComponent(user.last_name)}','${encodeURIComponent(user.dob)}','${encodeURIComponent(user.national_id)}')">Edit</button> <button class="danger" onclick="deleteUser('${encodeURIComponent(user.username)}')">Delete</button></td></tr>`).join('') || '<tr><td colspan="5">No employee accounts yet.</td></tr>'}
             </tbody></table></div></section>
-            <section class="admin-panel"><h2>Recent Sign-in Times</h2><div class="table-wrap"><table><thead><tr><th>Employee</th><th>Date and Time</th></tr></thead><tbody>${data.logins.slice(0, 20).map(entry => `<tr><td>${escapeHtml(entry.username)}</td><td>${new Date(entry.logged_at).toLocaleString('en-US')}</td></tr>`).join('')}</tbody></table></div></section>`;
+        `;
     } catch (error) { document.getElementById('adminContent').textContent = error.message; }
 }
 
