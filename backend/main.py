@@ -43,7 +43,16 @@ def db():
     DB.parent.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(DB)
     con.row_factory = sqlite3.Row
-    con.execute("CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password TEXT NOT NULL, dob TEXT NOT NULL, national_id TEXT NOT NULL, first_name TEXT NOT NULL, last_name TEXT NOT NULL, created_at TEXT NOT NULL)")
+    con.execute("CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password TEXT NOT NULL, dob TEXT NOT NULL, email TEXT NOT NULL DEFAULT '', first_name TEXT NOT NULL, last_name TEXT NOT NULL, created_at TEXT NOT NULL)")
+    columns = {row["name"] for row in con.execute("PRAGMA table_info(users)")}
+    if "national_id" in columns:
+        # Migrate existing accounts and discard the previously collected ID data.
+        con.execute("ALTER TABLE users RENAME TO users_legacy")
+        con.execute("CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT NOT NULL, dob TEXT NOT NULL, email TEXT NOT NULL DEFAULT '', first_name TEXT NOT NULL, last_name TEXT NOT NULL, created_at TEXT NOT NULL)")
+        email_expr = "email" if "email" in columns else "''"
+        con.execute(f"INSERT INTO users (username,password,dob,email,first_name,last_name,created_at) SELECT username,password,dob,{email_expr},first_name,last_name,created_at FROM users_legacy")
+        con.execute("DROP TABLE users_legacy")
+        con.commit()
     con.execute("CREATE TABLE IF NOT EXISTS admins (username TEXT PRIMARY KEY, password_salt TEXT NOT NULL, password_hash TEXT NOT NULL, created_at TEXT NOT NULL)")
     if INITIAL_ADMIN_PASSWORD and not con.execute("SELECT 1 FROM admins WHERE username='Admin'").fetchone():
         salt, password_hash = hash_admin_password(INITIAL_ADMIN_PASSWORD)
@@ -54,7 +63,7 @@ def db():
 def pw_hash(value): return hashlib.pbkdf2_hmac("sha256", value.encode(), b"packing-register-v1", 200_000).hex()
 
 class RegisterRequest(BaseModel):
-    username: str; password: str; dob: str; national_id: str; first_name: str; last_name: str
+    username: str; password: str; dob: str; email: str; first_name: str; last_name: str
 class LoginRequest(BaseModel):
     username: str; password: str
 
@@ -93,7 +102,7 @@ def register(body: RegisterRequest):
     if body.username.lower() == "admin": raise HTTPException(400, "This username is reserved")
     con = db()
     try:
-        con.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)", (body.username.strip(), pw_hash(body.password), body.dob, body.national_id.strip(), body.first_name.strip(), body.last_name.strip(), datetime.now(timezone.utc).isoformat()))
+        con.execute("INSERT INTO users (username,password,dob,email,first_name,last_name,created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (body.username.strip(), pw_hash(body.password), body.dob, body.email.strip(), body.first_name.strip(), body.last_name.strip(), datetime.now(timezone.utc).isoformat()))
         con.commit()
     except sqlite3.IntegrityError: raise HTTPException(409, "This username is already taken")
     finally: con.close()
@@ -126,7 +135,7 @@ def auth_session(token: str):
 @app.get("/api/admin/overview")
 def overview(token: str):
     require_admin(token); con=db()
-    users=[dict(r) for r in con.execute("SELECT username,dob,national_id,first_name,last_name,created_at FROM users ORDER BY username")]
+    users=[dict(r) for r in con.execute("SELECT username,dob,email,first_name,last_name,created_at FROM users ORDER BY username")]
     con.close()
     products=sorted({item for order in orders.orders for item in order["items"]}, key=str.casefold)
     return {"users":users,"orders":orders.orders,"completed":history.all(),"products":products}
@@ -136,12 +145,16 @@ def delete_user(username: str, token: str):
     require_admin(token); con=db(); con.execute("DELETE FROM users WHERE username=?",(username,)); con.commit(); con.close(); return {"ok":True}
 
 class OrderEdit(BaseModel): items: list[str]
-class UserEdit(BaseModel): dob: str; national_id: str; first_name: str; last_name: str
+class UserEdit(BaseModel): dob: str; email: str; first_name: str; last_name: str; password: str = ""
 
 @app.put("/api/admin/users/{username}")
 def edit_user(username: str, body: UserEdit, token: str):
     require_admin(token); con=db()
-    result=con.execute("UPDATE users SET dob=?,national_id=?,first_name=?,last_name=? WHERE username=?", (body.dob,body.national_id.strip(),body.first_name.strip(),body.last_name.strip(),username))
+    if body.password and len(body.password) < 4:
+        con.close(); raise HTTPException(400, "Password must have at least 4 characters")
+    result=con.execute("UPDATE users SET dob=?,email=?,first_name=?,last_name=? WHERE username=?", (body.dob,body.email.strip(),body.first_name.strip(),body.last_name.strip(),username))
+    if result.rowcount and body.password:
+        con.execute("UPDATE users SET password=? WHERE username=?", (pw_hash(body.password), username))
     con.commit(); con.close()
     if not result.rowcount: raise HTTPException(404,"Employee not found")
     return {"ok":True}

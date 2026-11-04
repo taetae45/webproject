@@ -12,7 +12,12 @@ async function api(url, options = {}) {
         headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }
     });
     const data = await response.json();
-    if (!response.ok) throw Error(data.detail || 'Something went wrong. Please try again.');
+    if (!response.ok) {
+        const detail = Array.isArray(data.detail)
+            ? data.detail.map(item => `${Array.isArray(item.loc) ? item.loc.slice(1).join('.') + ': ' : ''}${item.msg || 'Invalid value'}`).join('\n')
+            : data.detail;
+        throw Error(typeof detail === 'string' ? detail : 'Something went wrong. Please try again.');
+    }
     return data;
 }
 
@@ -107,8 +112,8 @@ async function loadAdmin() {
                 <article><b>${data.completed.length}</b><span>Orders Packed</span></article>
             </div>
             <section class="admin-panel"><h2>Packed Orders — Customer Changes</h2><p>Edit the products in an order when a customer requests a change after packing.</p><div class="table-wrap"><table><thead><tr><th>Order</th><th>Packed By</th><th>Packed At</th><th>Items</th><th>Actions</th></tr></thead><tbody>${data.completed.map(order => `<tr><td>${escapeHtml(order.id)}</td><td>${escapeHtml(order.employee || 'Not recorded')}</td><td>${new Date(order.completed_at).toLocaleString('en-US')}</td><td>${order.items.map(escapeHtml).join(', ') || 'No items'}</td><td><button onclick="editOrder('${encodeURIComponent(order.record_id)}','${encodeURIComponent(JSON.stringify(order.items))}','${encodeURIComponent(order.id)}')">Edit Items</button> <button class="danger" onclick="deleteOrder('${encodeURIComponent(order.record_id)}')">Delete</button></td></tr>`).join('') || '<tr><td colspan="5">No packed orders yet.</td></tr>'}</tbody></table></div></section>
-            <section class="admin-panel"><h2>Employees</h2><div class="table-wrap"><table><thead><tr><th>Username</th><th>Name</th><th>Date of Birth</th><th>National ID</th><th>Actions</th></tr></thead><tbody>
-                ${data.users.map(user => `<tr><td>${escapeHtml(user.username)}</td><td>${escapeHtml(user.first_name)} ${escapeHtml(user.last_name)}</td><td>${escapeHtml(user.dob)}</td><td>${escapeHtml(user.national_id)}</td><td><button onclick="editUser('${encodeURIComponent(user.username)}','${encodeURIComponent(user.first_name)}','${encodeURIComponent(user.last_name)}','${encodeURIComponent(user.dob)}','${encodeURIComponent(user.national_id)}')">Edit</button> <button class="danger" onclick="deleteUser('${encodeURIComponent(user.username)}')">Delete</button></td></tr>`).join('') || '<tr><td colspan="5">No employee accounts yet.</td></tr>'}
+            <section class="admin-panel"><h2>Employees</h2><div class="table-wrap"><table><thead><tr><th>Username</th><th>Name</th><th>Date of Birth</th><th>Email</th><th>Actions</th></tr></thead><tbody>
+                ${data.users.map(user => `<tr><td>${escapeHtml(user.username)}</td><td>${escapeHtml(user.first_name)} ${escapeHtml(user.last_name)}</td><td>${escapeHtml(user.dob)}</td><td>${escapeHtml(user.email)}</td><td><button onclick="editUser('${encodeURIComponent(user.username)}','${encodeURIComponent(user.first_name)}','${encodeURIComponent(user.last_name)}','${encodeURIComponent(user.dob)}','${encodeURIComponent(user.email)}')">Edit</button> <button class="danger" onclick="deleteUser('${encodeURIComponent(user.username)}')">Delete</button></td></tr>`).join('') || '<tr><td colspan="5">No employee accounts yet.</td></tr>'}
             </tbody></table></div></section>
         `;
     } catch (error) { document.getElementById('adminContent').textContent = error.message; }
@@ -137,15 +142,15 @@ document.getElementById('cancelEditDialog').onclick = closeEditDialog;
 editDialog.addEventListener('click', event => { if (event.target === editDialog) closeEditDialog(); });
 
 // สร้างแบบฟอร์มแก้ไขข้อมูลพนักงานจากข้อมูลที่ส่งมาจากแถวในตาราง
-window.editUser = (encodedUser, encodedFirst, encodedLast, encodedDob, encodedId) => {
+window.editUser = (encodedUser, encodedFirst, encodedLast, encodedDob, encodedEmail) => {
     const username = decodeURIComponent(encodedUser);
     const fields = [
         ['first_name', 'First Name', decodeURIComponent(encodedFirst), 'text'],
         ['last_name', 'Last Name', decodeURIComponent(encodedLast), 'text'],
         ['dob', 'Date of Birth', decodeURIComponent(encodedDob), 'date'],
-        ['national_id', 'National ID Number', decodeURIComponent(encodedId), 'text']
+        ['email', 'Email', decodeURIComponent(encodedEmail), 'email']
     ];
-    const content = `<p class="dialog-current">Editing employee: <strong>${escapeHtml(username)}</strong></p><div class="dialog-fields">${fields.map(([name, label, value, type]) => `<label>${label}<input name="${name}" type="${type}" value="${escapeHtml(value)}" required></label>`).join('')}</div>`;
+    const content = `<p class="dialog-current">Editing employee: <strong>${escapeHtml(username)}</strong></p><div class="dialog-fields">${fields.map(([name, label, value, type]) => `<label>${label}<input name="${name}" type="${type}" value="${escapeHtml(value)}" required></label>`).join('')}<label>New Password (leave blank to keep current)<input name="password" type="password" minlength="4" autocomplete="new-password"></label></div>`;
     showEditDialog('Edit Employee Profile', content, { type: 'user', username });
 };
 

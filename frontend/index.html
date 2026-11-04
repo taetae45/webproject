@@ -14,7 +14,7 @@
     <main id="authView" class="auth-view">
         <section class="auth-card"><img src="assets/logo.svg" alt=""><p class="eyebrow">AI PACKING DETECTION</p><h1 id="authTitle">Sign In</h1><p class="muted" id="authSubtitle">Sign in to start managing orders.</p>
             <form id="loginForm"><label>Username<input name="username" required autocomplete="username"></label><label>Password<input name="password" type="password" required autocomplete="current-password"></label><button class="primary" type="submit">Sign In</button></form>
-            <form id="registerForm" hidden><div class="form-grid"><label>Username<input name="username" required></label><label>Password<input name="password" type="password" minlength="4" required></label><label>Date of Birth<input name="dob" type="date" required></label><label>National ID Number<input name="national_id" required maxlength="20"></label><label>First Name<input name="first_name" required></label><label>Last Name<input name="last_name" required></label></div><button class="primary" type="submit">Register Employee</button></form>
+            <form id="registerForm" hidden><div class="form-grid"><label>Username<input name="username" required></label><label>Password<input name="password" type="password" minlength="4" required></label><label>Date of Birth<input name="dob" type="date" required></label><label>Email<input name="email" type="email" autocomplete="email" required></label><label>First Name<input name="first_name" required></label><label>Last Name<input name="last_name" required></label></div><button class="primary" type="submit">Register Employee</button></form>
             <p class="form-message" id="authMessage" aria-live="polite"></p><button class="text-button" id="registerToggle" type="button">Create an employee account</button><button class="text-button" id="loginToggle" type="button" hidden>Back to Sign In</button>
         </section>
     </main>
@@ -75,6 +75,6 @@
     <script src="js/app.js?v=2"></script>
     <script src="js/history.js?v=2"></script>
     <script src="js/navigation.js?v=2"></script>
-    <script src="js/auth.js?v=3"></script>
+    <script src="js/auth.js?v=5"></script>
 </body>
 </html>
