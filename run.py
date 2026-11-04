@@ -20,7 +20,7 @@ BROWSER_DELAY_SECONDS = 2
 
 
 def is_port_in_use() -> bool:
-    # ตรวจว่ามีอะไรจับพอร์ตอยู่แล้วหรือไม่ เพื่อแจ้ง error ที่อ่านรู้เรื่อง
+    # ตรวจว่ามีอะไรจับพอร์ตอยู่แล้วหรือไม่ เพื่อแจ้ง error 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
         probe.settimeout(0.5)
         return probe.connect_ex((HOST, PORT)) == 0

@@ -2,3 +2,6 @@
 __pycache__/
 *.py[cod]
 backend/models/*.pt
+tests/.tmp/
+.test-tmp/
+coverage/

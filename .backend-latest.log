@@ -1,0 +1,43 @@
+INFO:     127.0.0.1:57300 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57305 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51203 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51848 - "GET / HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51848 - "GET /css/style.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:60550 - "GET /js/order.js?v=2 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:58506 - "GET /js/detector.js?v=2 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55598 - "GET /js/websocket.js?v=2 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:61717 - "GET /js/history.js?v=2 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54197 - "GET /js/auth.js?v=2 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54197 - "GET /api/auth/session?token=hVNE-t3bcKCWmjyetuJxhuMom0CXHhlEdZ-6v7lnq0w HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:54197 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54197 - "POST /api/orders/random HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59600 - "GET /api/orders/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57588 - "POST /api/auth/logout HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57588 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57588 - "GET /api/admin/overview?token=C9WT4O1_q16qKzmGCNQx4BcykMYUN7LNO1V3Gw7HWwk HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57588 - "POST /api/auth/logout HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57588 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57588 - "GET /api/admin/overview?token=FIlWuFmc0cM6cNa5lgxgE6h2VxJQ95bXwnuCS1FZxb0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57588 - "POST /api/auth/logout HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57588 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57588 - "POST /api/auth/logout HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57588 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57588 - "GET /api/orders/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50081 - "POST /api/auth/logout HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50081 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50081 - "GET /api/admin/overview?token=Ao-ZrmOGDyt7gZg2WoRLeXtreG-Dc3W8RkKpp1EDZ0Y HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58978 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58978 - "GET /css/style.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53284 - "GET /js/order.js?v=2 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:56479 - "GET /js/detector.js?v=2 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:63532 - "GET /js/websocket.js?v=2 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55546 - "GET /js/history.js?v=2 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51313 - "GET /js/auth.js?v=3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51313 - "GET /api/auth/session?token=Ao-ZrmOGDyt7gZg2WoRLeXtreG-Dc3W8RkKpp1EDZ0Y HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51313 - "GET /api/admin/overview?token=Ao-ZrmOGDyt7gZg2WoRLeXtreG-Dc3W8RkKpp1EDZ0Y HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51313 - "POST /api/auth/logout HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51313 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51313 - "GET /api/admin/overview?token=Z1LN1uxXN9lLIQBo_9LpqTZUmo2zi7HOrfDSezqBNsE HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57088 - "POST /api/auth/logout HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58570 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58570 - "GET /api/admin/overview?token=x9bKo07qYT9CWqpwK-Yv5Rw2ZsCudN4UQmqT1UW2KpU HTTP/1.1" 200 OK

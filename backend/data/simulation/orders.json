@@ -1,7 +1,12 @@
 {
   "orders": [
-    {"id": "DEMO-001", "items": ["Biscuit", "mama", "chocolate"]},
-    {"id": "DEMO-002", "items": ["chocolate", "Tissue", "coffee", "Mama"]},
-    {"id": "DEMO-003", "items": ["rice porridge", "Biscuit"]}
+    {"id": "DEMO-001","items": ["mama"]},
+    {"id": "DEMO-002","items": ["tissue","coffee"]},
+    {"id": "DEMO-003","items": ["rice porridge","biscuit"]},
+    {"id":"DEMO-004","items":["mama","mama","biscuit"]},
+    {"id":"DEMO-005","items":["tissue","coffee","coffee"]},
+    {"id":"DEMO-006","items":["rice porridge","biscuit","biscuit"]},
+    {"id":"DEMO-007","items":["mama","tissue","tissue"]},
+    {"id":"DEMO-008","items":["coffee","biscuit","mama"]}
   ]
 }

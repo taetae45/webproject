@@ -1,0 +1,10 @@
+INFO:     Started server process [1436]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
+INFO:     127.0.0.1:53137 - "WebSocket /ws/detect" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     127.0.0.1:50439 - "WebSocket /ws/detect" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     127.0.0.1:54717 - "WebSocket /ws/detect" 403
+INFO:     connection rejected (403 Forbidden)

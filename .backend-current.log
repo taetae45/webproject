@@ -1,0 +1,14 @@
+INFO:     127.0.0.1:57451 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65316 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58394 - "GET / HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:58394 - "GET /css/style.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:58394 - "GET /js/auth.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:58394 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59594 - "POST /api/orders/random HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57425 - "GET /js/auth.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57425 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63320 - "POST /api/orders/random HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54493 - "POST /api/orders/random HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52551 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62744 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62754 - "GET /health HTTP/1.1" 200 OK
